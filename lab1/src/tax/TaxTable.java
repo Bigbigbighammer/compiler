@@ -17,4 +17,9 @@ public class TaxTable {
     public List<TaxRule> getTaxRulesList() {
         return taxRulesList;
     }
+
+    public void resetRules(List<TaxRule> newRules) {
+        this.taxRulesList.clear();
+        this.taxRulesList.addAll(newRules);
+    }
 }

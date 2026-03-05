@@ -2,7 +2,7 @@ package tax;
 
 public class TaxConfig {
 
-    private double threshold;
+    private double threshold = 1600;
 
     private TaxTable taxTable;
 
