@@ -1,6 +1,10 @@
 package view;
 
-import tax.*;
+import model.entity.TaxConfig;
+import model.loader.TaxConfigLoader;
+import model.loader.TaxConfigLoaderFactory;
+import model.entity.TaxRule;
+import service.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +16,11 @@ import java.util.InputMismatchException;
  * 负责显示菜单和处理用户输入
  */
 public class TaxConsoleMenu {
-    private TaxCalculator calculator;
     private Scanner scanner;
     private TaxConfig taxConfig;
 
 
     public TaxConsoleMenu() {
-        this.calculator = new TaxCalculator();
         this.scanner = new Scanner(System.in);
     }
 
@@ -99,8 +101,8 @@ public class TaxConsoleMenu {
             System.out.println(">> 错误：工资不能为负数。");
             return;
         }
-
-        double tax = calculator.calculateTax(income, taxConfig);
+        TaxCalculator calculator = new TaxCalculator(taxConfig);
+        double tax = calculator.calculateTax(income);
         System.out.printf(">> 结果：您应缴纳的个人所得税为: %.2f 元\n", tax);
     }
 

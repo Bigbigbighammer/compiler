@@ -1,4 +1,4 @@
-package tax;
+package model.entity;
 
 /**
  * 税率表规则

@@ -1,12 +1,21 @@
-package tax;
+package service;
+
+import model.entity.TaxConfig;
+import model.entity.TaxRule;
+import model.entity.TaxTable;
 
 /**
  * 税收相关类
  * @author Aaron
  */
 public class TaxCalculator {
+    private final TaxConfig taxConfig;
 
-    public double calculateTax(double salary, TaxConfig taxConfig) {
+    public TaxCalculator(TaxConfig taxConfig) {
+        this.taxConfig = taxConfig;
+    }
+
+    public double calculateTax(double salary) {
         TaxChain taxChain = buildTaxChain(taxConfig);
         double salaryBeyondThreshold = salary - taxConfig.getThreshold();
         if (salaryBeyondThreshold < 0) {

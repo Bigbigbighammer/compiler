@@ -1,4 +1,6 @@
-package tax;
+package service;
+
+import model.entity.TaxRule;
 
 public class BaseTaxHandler implements TaxHandler{
 

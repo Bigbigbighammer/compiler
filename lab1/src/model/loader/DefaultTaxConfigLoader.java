@@ -1,4 +1,8 @@
-package tax;
+package model.loader;
+
+import model.entity.TaxConfig;
+import model.entity.TaxRule;
+import model.entity.TaxTable;
 
 import java.util.ArrayList;
 import java.util.List;

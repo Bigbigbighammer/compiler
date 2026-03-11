@@ -1,4 +1,4 @@
-package tax;
+package model.entity;
 
 public class TaxConfig {
 

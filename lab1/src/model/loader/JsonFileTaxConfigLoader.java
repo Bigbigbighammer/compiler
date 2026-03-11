@@ -1,4 +1,6 @@
-package tax;
+package model.loader;
+
+import model.entity.TaxConfig;
 
 import java.io.File;
 

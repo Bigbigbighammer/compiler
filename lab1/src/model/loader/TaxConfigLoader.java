@@ -1,4 +1,6 @@
-package tax;
+package model.loader;
+
+import model.entity.TaxConfig;
 
 public interface TaxConfigLoader {
     /**
