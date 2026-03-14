@@ -35,6 +35,10 @@ import java.util.List;
  * double threshold = config.getThreshold();
  * </pre>
  *
+ * <h2>配置文件位置</h2>
+ * <p>settings.json 文件位于项目根目录 (lab1/) 下，
+ * 与源代码目录 (src/) 同级。</p>
+ *
  * <h2>支持的JSON格式</h2>
  * <pre>
  * {
