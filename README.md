@@ -245,12 +245,19 @@ git push -u origin master
 
 ## 📚 文档
 
-- **PROJECT_GUIDE.md** - 详细的项目配置和使用指南
-- **QUICK_REFERENCE.md** - 快速参考和常用命令
-- **COMPLETION_SUMMARY.md** - 项目完成总结
-- **lab1/JSON_LOADER_DOCUMENTATION.md** - JSON加载器技术文档
+所有项目文档位于 `lab1/` 目录下：
 
-## 💡 技术亮点
+- **lab1/README.md** - 项目概览和快速开始（本文件的原始版本）
+- **lab1/PROJECT_GUIDE.md** - 详细的项目配置和使用指南
+- **lab1/QUICK_REFERENCE.md** - 快速参考和常用命令
+- **lab1/COMPLETION_SUMMARY.md** - 项目完成总结
+- **lab1/FINAL_COMPLETION_REPORT.md** - 最终完成报告
+- **lab1/PROJECT_COMPLETION_REPORT.xml** - XML格式的完成报告
+- **lab1/JSON_LOADER_DOCUMENTATION.md** - JSON加载器技术文档
+- **lab1/JAVADOC_GENERATION_SUMMARY.md** - javadoc生成总结
+- **lab1/docs/index.html** - 自动生成的HTML API文档（打开此文件查看完整的API文档）
+
+## 📖 查看javadoc文档
 
 1. ✅ **完整的Java项目结构** - 遵循Maven标准目录布局
 2. ✅ **专业的配置管理** - JSON配置加载和验证
