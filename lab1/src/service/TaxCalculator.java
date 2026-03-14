@@ -9,9 +9,17 @@ import model.entity.TaxTable;
  * @author Aaron
  */
 public class TaxCalculator {
-    private final TaxConfig taxConfig;
+    private TaxConfig taxConfig;
 
     public TaxCalculator(TaxConfig taxConfig) {
+        this.taxConfig = taxConfig;
+    }
+
+    public TaxConfig getTaxConfig() {
+        return taxConfig;
+    }
+
+    public void setTaxConfig(TaxConfig taxConfig) {
         this.taxConfig = taxConfig;
     }
 
