@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"model.entity"},{"l":"model.loader"},{"l":"service"},{"l":"view"},{"l":"所有程序包","u":"allpackages-index.html"}];updateSearchResults();
