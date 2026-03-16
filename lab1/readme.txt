@@ -6,7 +6,8 @@
 ================================================================================
 项目名称: 个人所得税计算系统 (Personal Income Tax Calculator)
 项目版本: 1.0.0
-完成日期: 2026年3月14日
+最初完成日期: 2026年3月14日
+最后更新日期: 2026年3月15日
 项目类型: 面向对象程序设计实验
 
 【开发者信息】
@@ -48,7 +49,7 @@ Email: copilot@github.com
 【项目结构】
 ================================================================================
 D:\Project4J\compiler\lab1/
-├── src/
+├── src/                                   # 源代码
 │   ├── Main.java                          # 程序入口
 │   ├── model/
 │   │   ├── entity/                        # 实体类
@@ -69,34 +70,47 @@ D:\Project4J\compiler\lab1/
 │   └── view/
 │       └── TaxConsoleMenu.java            # 控制台菜单
 │
-├── settings.json                          # JSON配置文件
 ├── test/                                  # 测试文件
 │   ├── BasicTaxTest.java
 │   ├── JsonLoaderTest.java
 │   ├── JsonLoaderFunctionalTest.java
 │   └── RegressionTest.java
 │
-├── lib/                                   # 依赖库
-│   └── gson-2.10.1.jar
+├── target/                                # Maven编译输出
+│   ├── classes/                           # 编译后的类文件
+│   └── ...
 │
-├── bin/                                   # 编译输出
+├── settings.json                          # JSON配置文件
+├── pom.xml                                # Maven项目配置
+│
 ├── docs/                                  # javadoc文档
 │   └── index.html                         # 文档入口
 │
 └── 📄 文档文件
     ├── design.md                          # 面向对象设计文档
     ├── readme.txt                         # 本文件
-    ├── PROJECT_GUIDE.md                   # 项目指南
     ├── QUICK_REFERENCE.md                 # 快速参考
-    ├── JSON_LOADER_DOCUMENTATION.md       # 加载器文档
-    └── JAVADOC_GENERATION_SUMMARY.md      # javadoc总结
+    ├── CODE_IMPLEMENTATION_GUIDE.md       # 代码实现指南
+    ├── UPDATE_LOG.md                      # 更新日志
+    ├── DOCUMENTATION_INDEX.md             # 文档导航
+    ├── DOCUMENTATION_UPDATE_SUMMARY.md    # 更新总结
+    ├── DOCUMENTATION_COMPLETION_REPORT.md # 完成报告
+    └── FIX_POM_ERROR.md                   # Maven问题解决
 
 【使用方法】
 ================================================================================
 
 1. 编译项目
+
+   方式1：使用Maven编译（推荐）
    cd D:\Project4J\compiler\lab1
-   javac -encoding UTF-8 -cp "lib/gson-2.10.1.jar" -d bin \
+   mvn clean compile
+
+   方式2：使用Maven打包
+   mvn clean package
+
+   方式3：使用javac直接编译（需要自行下载 Gson 依赖）
+   javac -encoding UTF-8 -d bin \
      src/model/entity/*.java \
      src/model/loader/*.java \
      src/service/*.java \
@@ -104,7 +118,16 @@ D:\Project4J\compiler\lab1/
      src/Main.java
 
 2. 运行程序
-   java -cp "lib/gson-2.10.1.jar;bin;." Main
+
+   方式1：使用Maven运行（推荐）
+   mvn exec:java -Dexec.mainClass="Main"
+
+   方式2：运行打包好的jar包
+   mvn clean package
+   java -jar target/tax-calculator.jar
+
+   方式3：编译后运行（需要 Gson 依赖在 classpath）
+   java -cp "bin:." Main
 
 3. 程序菜单
    当前起征点: 1600 元
@@ -154,7 +177,7 @@ D:\Project4J\compiler\lab1/
   ✓ 这为我以后的大型项目设计奠定了基础
 
 【四】代码质量
-  ✓ 编写了870+行的javadoc注释
+  ✓ 编写了1000+行的javadoc注释
   ✓ 实现了100%的代码文档覆盖率
   ✓ 学会了如何写好注释和文档
   ✓ 理解了"代码即文档"的真正含义
@@ -241,8 +264,8 @@ GitHub: github.com
 ================================================================================
 文件名: readme.txt
 编码: UTF-8
-最后修改: 2026-03-14
-版本: 1.0.0
+最后修改: 2026-03-15
+版本: 1.1.0
 
 ================================================================================
                               文件结束

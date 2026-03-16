@@ -6,8 +6,9 @@
 |------|------|
 | **项目名称** | 个人所得税计算系统 |
 | **项目版本** | 1.0.0 |
-| **文档版本** | 1.0.0 |
-| **完成日期** | 2026-03-14 |
+| **文档版本** | 1.1.0 |
+| **完成日期** | 2026-03-15 |
+| **最后更新日期** | 2026-03-15 |
 | **文档类型** | 面向对象设计文档 |
 
 ---
@@ -173,9 +174,13 @@ src/
   - taxConfig: TaxConfig
 
 方法:
+  + getTaxConfig(): TaxConfig
+  + setTaxConfig(TaxConfig): void
   + calculateTax(double): double
   - buildTaxChain(TaxConfig): TaxChain
 ```
+
+**功能**：根据配置的起征点和税率表计算个人所得税，实现累进税率的计算逻辑。
 
 #### TaxChain（责任链模式）
 ```
@@ -192,29 +197,50 @@ src/
 #### TaxContext
 ```
 属性:
-  - tax: double            [已计算税费]
-  - salary: double         [待处理收入]
-  - stop: boolean          [停止标志]
+  - tax: double              [已计算税费]
+  - salary: double           [待处理收入]
+  - stop: boolean            [停止标志]
 
 方法:
+  + TaxContext(double): 构造函数
   + setSalary(double): void
   + getSalary(): double
   + addTax(double): void
   + getFinalTax(): double
   + stopChain(): void
   + shouldStop(): boolean
+
+初始化:
+  - tax初始化为0
+  - salary初始化为传入的收入金额
+  - stop初始化为false
+
+状态更新:
+  - addTax(): 累加已计算的税费
+  - setSalary(): 更新待处理收入（通常通过计算自动更新）
+  - stopChain(): 标记处理链应停止
 ```
 
 #### BaseTaxHandler
 ```
 职责: 处理单条税率规则的税费计算
 方法:
-  + calculate(TaxContext): void
+  + BaseTaxHandler(TaxRule): 构造函数
+  + calculate(TaxContext): void (实现 TaxHandler 接口)
 
 计算逻辑:
-  1. 检查待处理收入是否低于规则最小值
-  2. 计算该规则范围内的应税收入
-  3. 按税率计算税费并累加
+  1. 获取待处理收入（salary）
+  2. 检查待处理收入是否小于该规则的最小值
+  3. 如果是，标记处理链停止；否则继续
+  4. 计算该规则范围内的应税收入部分：
+     part = min(max, salary) - min
+  5. 按税率计算税费：tax = part * rate
+  6. 更新上下文的累计税费和待处理收入
+
+实现细节:
+  - 使用Math.min()确保不超过规则的最大值
+  - 处理链在收入不足以达到规则下限时自动停止
+  - 支持多级的阶梯税率计算
 ```
 
 ### 3.4 视图类
@@ -596,7 +622,14 @@ TaxHandler (接口)
 ### 13.1 编译
 
 ```bash
-javac -encoding UTF-8 -cp "lib/gson-2.10.1.jar" -d bin \
+# 方式1：使用 Maven 编译（推荐）
+mvn clean compile
+
+# 方式2：使用 Maven 打包
+mvn clean package
+
+# 方式3：使用 javac 直接编译（需要自行处理依赖）
+javac -encoding UTF-8 -d bin \
   src/model/entity/*.java \
   src/model/loader/*.java \
   src/service/*.java \
@@ -607,15 +640,26 @@ javac -encoding UTF-8 -cp "lib/gson-2.10.1.jar" -d bin \
 ### 13.2 运行
 
 ```bash
-java -cp "lib/gson-2.10.1.jar;bin;." Main
+# 方式1：使用 Maven 运行（推荐）
+mvn exec:java -Dexec.mainClass="Main"
+
+# 方式2：直接运行 jar 包
+java -jar target/tax-calculator.jar
+
+# 方式3：使用 javac 编译后运行
+java -cp "bin:." Main
 ```
 
-### 13.3 生成javadoc
+### 13.3 生成 javadoc
 
 ```bash
+# 方式1：使用 Maven 生成 javadoc（推荐）
+mvn javadoc:javadoc
+
+# 方式2：使用 javadoc 命令
 javadoc -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 \
   -private -use -author -version \
-  -d docs -cp lib/gson-2.10.1.jar \
+  -d docs \
   src/**/*.java
 ```
 
@@ -649,7 +693,9 @@ javadoc -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 \
 
 ---
 
-**文档完成日期**: 2026-03-14  
-**版本**: 1.0.0  
-**作者**: GitHub Copilot
+**文档完成日期**: 2026-03-15  
+**最后更新日期**: 2026-03-15  
+**版本**: 1.1.0  
+**作者**: GitHub Copilot  
+**状态**: 与最新代码同步
 

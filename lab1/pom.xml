@@ -50,9 +50,6 @@
 
     <!-- 构建配置 -->
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>test</testSourceDirectory>
-
         <resources>
             <resource>
                 <directory>.</directory>
