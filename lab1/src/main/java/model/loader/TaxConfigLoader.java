@@ -27,12 +27,11 @@ import model.entity.TaxConfig;
  * </pre>
  *
  * <h2>配置格式要求</h2>
- * <p>配置文件应包含以下信息：
+ * <p>配置文件应包含以下信息：</p>
  * <ul>
  *   <li>threshold：个人所得税起征点</li>
  *   <li>taxTable：包含多条税率规则的税率表</li>
  * </ul>
- * </p>
  *
  * @author Aaron
  * @version 1.0.0

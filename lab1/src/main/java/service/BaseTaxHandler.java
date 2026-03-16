@@ -57,14 +57,13 @@ public class BaseTaxHandler implements TaxHandler {
     /**
      * 计算该税率规则范围内的税费
      *
-     * <p>处理过程：
+     * <p>处理过程：</p>
      * <ol>
      *   <li>获取当前待处理收入</li>
      *   <li>如果待处理收入小于该规则的最小值，标记停止</li>
      *   <li>否则，计算该规则范围内应征税的收入部分</li>
      *   <li>按税率计算并累加税费</li>
      * </ol>
-     * </p>
      *
      * @param taxContext 税收计算上下文
      *

@@ -87,13 +87,12 @@ public class TaxCalculator {
      * <p>根据配置的起征点和税率表，计算月工资对应的所得税。
      * 如果月工资低于起征点，返回0。</p>
      *
-     * <p>计算步骤：
+     * <p>计算步骤：</p>
      * <ol>
      *   <li>获取超出起征点的部分：salaryBeyondThreshold = salary - threshold</li>
      *   <li>如果超出额小于0，直接返回0</li>
      *   <li>否则，通过税率链进行逐级计算</li>
      * </ol>
-     * </p>
      *
      * @param salary 月工资金额（元）
      * @return 应缴个人所得税（元）

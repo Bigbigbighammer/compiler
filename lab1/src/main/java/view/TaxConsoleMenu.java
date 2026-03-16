@@ -16,16 +16,15 @@ import java.util.InputMismatchException;
 /**
  * 个人所得税计算系统的控制台交互界面
  *
- * <p>提供友好的命令行用户界面，用户可以通过菜单操作进行以下功能：
+ * <p>提供友好的命令行用户界面，用户可以通过菜单操作进行以下功能：</p>
  * <ul>
  *   <li>计算个人所得税</li>
  *   <li>设置新的起征点</li>
  *   <li>重置整个税率表</li>
  *   <li>调整税率（保留区间不变）</li>
  * </ul>
- * </p>
  *
- * <h3>主要职责</h3>
+ * <h2>主要职责</h2>
  * <ul>
  *   <li>初始化税收配置</li>
  *   <li>显示菜单选项</li>
@@ -34,7 +33,7 @@ import java.util.InputMismatchException;
  *   <li>显示计算结果或操作结果</li>
  * </ul>
  *
- * <h3>使用示例</h3>
+ * <h2>使用示例</h2>
  * <pre>
  * // 启动程序
  * public static void main(String[] args) {
@@ -44,8 +43,9 @@ import java.util.InputMismatchException;
  * // 然后根据菜单提示进行操作
  * </pre>
  *
- * <h3>菜单功能说明</h3>
+ * <h2>菜单功能说明</h2>
  * <table border="1">
+ *   <caption>菜单功能说明</caption>
  *   <tr><th>选项</th><th>功能</th><th>说明</th></tr>
  *   <tr><td>配置源</td><td>选择配置源</td><td>选择使用默认配置还是JSON文件配置</td></tr>
  *   <tr><td>1</td><td>计算个人所得税</td><td>输入月工资，计算应缴税费</td></tr>

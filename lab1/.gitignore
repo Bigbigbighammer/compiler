@@ -32,6 +32,12 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
+### Documentation ###
+/docs/
+
+# 保留 Javadoc API 文档
+!/apidocs/
+
 ### Build output ###
 *.jar
 *.war

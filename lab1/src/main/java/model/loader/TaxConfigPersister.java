@@ -35,14 +35,13 @@ public interface TaxConfigPersister {
     /**
      * 将税收配置保存到存储介质
      *
-     * <p>该方法应确保：
+     * <p>该方法应确保：</p>
      * <ul>
      *   <li>配置数据完整性</li>
      *   <li>文件/数据库格式正确</li>
      *   <li>所有必需的字段都被保存</li>
      *   <li>发生异常时进行适当的错误处理</li>
      * </ul>
-     * </p>
      *
      * @param config 要保存的TaxConfig对象
      * @throws RuntimeException 当保存失败时抛出异常

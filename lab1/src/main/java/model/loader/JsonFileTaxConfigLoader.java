@@ -77,14 +77,13 @@ public class JsonFileTaxConfigLoader implements TaxConfigLoader {
     /**
      * 从JSON配置文件加载税务配置
      *
-     * <p>该方法执行以下步骤：
+     * <p>该方法执行以下步骤：</p>
      * <ol>
      *   <li>从classpath加载指定的JSON文件</li>
      *   <li>使用Gson库解析JSON内容</li>
      *   <li>验证所有配置数据的有效性</li>
      *   <li>将JSON DTO转换为TaxConfig实体对象</li>
      * </ol>
-     * </p>
      *
      * @return 解析后的TaxConfig对象
      * @throws RuntimeException 当文件不存在、JSON解析失败或数据验证失败时抛出

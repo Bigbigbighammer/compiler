@@ -93,6 +93,21 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
+
+            <!-- Javadoc文档插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <charset>UTF-8</charset>
+                    <encoding>UTF-8</encoding>
+                    <docencoding>UTF-8</docencoding>
+                    <locale>zh_CN</locale>
+                    <failOnError>false</failOnError>
+                    <source>1.8</source>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

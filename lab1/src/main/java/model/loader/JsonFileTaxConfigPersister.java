@@ -79,7 +79,7 @@ public class JsonFileTaxConfigPersister implements TaxConfigPersister {
     /**
      * 将税收配置保存到JSON文件
      *
-     * <p>该方法执行以下步骤：
+     * <p>该方法执行以下步骤：</p>
      * <ol>
      *   <li>验证TaxConfig对象不为null</li>
      *   <li>创建父目录（如果不存在）</li>
@@ -87,7 +87,6 @@ public class JsonFileTaxConfigPersister implements TaxConfigPersister {
      *   <li>使用Gson序列化为JSON格式</li>
      *   <li>写入到指定的文件路径</li>
      * </ol>
-     * </p>
      *
      * @param config 要保存的TaxConfig对象
      * @throws RuntimeException 当保存失败时抛出异常
