@@ -92,8 +92,6 @@ public class JsonFileTaxConfigLoader implements TaxConfigLoader {
     public TaxConfig load() throws Exception {
         System.out.println(">> [Loader] Loading from JSON file: " + filePath);
 
-        System.out.println("当前工作目录 (user.dir): " + System.getProperty("user.dir"));
-        System.out.println("正在寻找的文件路径: " + new File("settings.json").getAbsolutePath());
         InputStream inputStream;
         try {
             inputStream = new FileInputStream(filePath);

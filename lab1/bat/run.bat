@@ -20,48 +20,94 @@ set /p choice="Enter option [1-5]: "
 if "%choice%"=="1" (
     cls
     echo Building...
-    cd ..
-    mvn clean install -DskipTests
-    cd bat
+    pushd .. 2>nul || (
+        echo Error: Cannot change directory. Please ensure run.bat is in the bat folder.
+        pause
+        goto menu
+    )
+    call mvn clean install -DskipTests
+    if errorlevel 1 (
+        echo.
+        echo ERROR: Build failed!
+    ) else (
+        echo.
+        echo Build completed successfully!
+    )
+    popd
+    echo.
     pause
     goto menu
 ) else if "%choice%"=="2" (
     cls
     echo Testing...
-    cd ..
-    mvn test
-    cd bat
+    pushd .. 2>nul || (
+        echo Error: Cannot change directory.
+        pause
+        goto menu
+    )
+    call mvn test
+    if errorlevel 1 (
+        echo.
+        echo ERROR: Tests failed!
+    ) else (
+        echo.
+        echo Tests completed successfully!
+    )
+    popd
+    echo.
     pause
     goto menu
 ) else if "%choice%"=="3" (
     cls
     echo Packaging...
-    cd ..
-    mvn clean package
-    cd bat
+    pushd .. 2>nul || (
+        echo Error: Cannot change directory.
+        pause
+        goto menu
+    )
+    call mvn clean package
+    if errorlevel 1 (
+        echo.
+        echo ERROR: Packaging failed!
+    ) else (
+        echo.
+        echo Packaging completed successfully!
+    )
+    popd
+    echo.
     pause
     goto menu
 ) else if "%choice%"=="4" (
     cls
     echo Starting...
-    cd ..
+    pushd .. 2>nul || (
+        echo Error: Cannot change directory.
+        pause
+        goto menu
+    )
     if exist "target\tax-calculator.jar" (
+        echo Running jar file...
         java -jar target\tax-calculator.jar
     ) else (
         echo JAR not found. Building...
-        mvn clean package -DskipTests
+        call mvn clean package -DskipTests
         if exist "target\tax-calculator.jar" (
+            echo Running jar file...
             java -jar target\tax-calculator.jar
+        ) else (
+            echo ERROR: JAR file still not found after building!
         )
     )
-    cd bat
+    popd
+    echo.
     pause
     goto menu
 ) else if "%choice%"=="5" (
+    echo Exiting...
     exit /b 0
 ) else (
     cls
-    echo Invalid option
+    echo Invalid option!
     pause
     goto menu
 )
