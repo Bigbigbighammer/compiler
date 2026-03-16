@@ -1,0 +1,5 @@
+@echo off
+echo Running tests...
+mvn test
+pause
+
