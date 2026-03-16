@@ -7,7 +7,7 @@
 项目名称: 个人所得税计算系统 (Personal Income Tax Calculator)
 项目版本: 1.0.0
 最初完成日期: 2026年3月14日
-最后更新日期: 2026年3月15日
+最后更新日期: 2026年3月16日
 项目类型: 面向对象程序设计实验
 
 【开发者信息】
@@ -25,11 +25,13 @@ Email: copilot@github.com
 主要功能：
   ✓ 根据用户输入的月工资计算应缴纳的个人所得税
   ✓ 支持从JSON配置文件灵活加载税率表
+  ✓ 支持持久化保存税率配置到JSON文件
   ✓ 支持动态修改起征点（免税额）
   ✓ 支持重置税率表或仅调整税率
   ✓ 提供友好的控制台交互菜单
   ✓ 完整的数据验证和异常处理
-  ✓ 详细的javadoc和设计文档
+  ✓ 完整的 Javadoc API 文档（apidocs/）
+  ✓ 详细的设计文档和使用指南
 
 【技术特点】
 ================================================================================
@@ -60,7 +62,9 @@ D:\Project4J\compiler\lab1/
 │   │       ├── TaxConfigLoader.java       # 加载器接口
 │   │       ├── JsonFileTaxConfigLoader.java
 │   │       ├── DefaultTaxConfigLoader.java
-│   │       └── TaxConfigLoaderFactory.java
+│   │       ├── TaxConfigLoaderFactory.java
+│   │       ├── TaxConfigPersister.java
+│   │       └── JsonFileTaxConfigPersister.java
 │   ├── service/                           # 业务逻辑
 │   │   ├── TaxCalculator.java             # 计算器
 │   │   ├── TaxChain.java                  # 处理链
@@ -70,32 +74,36 @@ D:\Project4J\compiler\lab1/
 │   └── view/
 │       └── TaxConsoleMenu.java            # 控制台菜单
 │
-├── test/                                  # 测试文件
+├── test/                                  # 单元测试
 │   ├── BasicTaxTest.java
 │   ├── JsonLoaderTest.java
 │   ├── JsonLoaderFunctionalTest.java
+│   ├── PersistenceTest.java
+│   ├── PersistenceIntegrationTest.java
 │   └── RegressionTest.java
+│
+├── apidocs/                               # Javadoc API文档 ✨
+│   ├── index.html                         # 文档入口
+│   ├── allclasses-index.html              # 所有类索引
+│   ├── allpackages-index.html             # 所有包索引
+│   └── [其他文档文件...]
 │
 ├── target/                                # Maven编译输出
 │   ├── classes/                           # 编译后的类文件
+│   ├── test-classes/                      # 编译后的测试类
+│   ├── site/apidocs/                      # Maven生成的Javadoc
 │   └── ...
 │
 ├── settings.json                          # JSON配置文件
 ├── pom.xml                                # Maven项目配置
 │
-├── docs/                                  # javadoc文档
-│   └── index.html                         # 文档入口
-│
 └── 📄 文档文件
     ├── design.md                          # 面向对象设计文档
     ├── readme.txt                         # 本文件
-    ├── QUICK_REFERENCE.md                 # 快速参考
-    ├── CODE_IMPLEMENTATION_GUIDE.md       # 代码实现指南
-    ├── UPDATE_LOG.md                      # 更新日志
-    ├── DOCUMENTATION_INDEX.md             # 文档导航
-    ├── DOCUMENTATION_UPDATE_SUMMARY.md    # 更新总结
-    ├── DOCUMENTATION_COMPLETION_REPORT.md # 完成报告
-    └── FIX_POM_ERROR.md                   # Maven问题解决
+    ├── SCRIPT_USAGE_GUIDE.md              # 启动脚本使用指南
+    ├── PERSISTENCE_GUIDE.md               # 持久化功能指南
+    ├── QUICKSTART.md                      # 快速开始指南
+    └── [其他文档...]
 
 【使用方法】
 ================================================================================

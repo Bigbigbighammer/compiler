@@ -6,9 +6,9 @@
 |------|------|
 | **项目名称** | 个人所得税计算系统 |
 | **项目版本** | 1.0.0 |
-| **文档版本** | 1.1.0 |
+| **文档版本** | 1.2.0 |
 | **完成日期** | 2026-03-15 |
-| **最后更新日期** | 2026-03-15 |
+| **最后更新日期** | 2026-03-16 |
 | **文档类型** | 面向对象设计文档 |
 
 ---
@@ -26,18 +26,22 @@
 ### 1.2 项目特点
 
 - ✅ **完整的面向对象设计** - 使用多个设计模式
-- ✅ **灵活的配置管理** - 支持JSON格式配置
+- ✅ **灵活的配置管理** - 支持JSON格式配置和持久化
 - ✅ **清晰的业务逻辑** - 责任链模式处理税费计算
-- ✅ **充分的文档** - 完整的javadoc和设计文档
+- ✅ **数据持久化** - 支持保存和读取配置文件
+- ✅ **充分的文档** - 完整的 Javadoc API 文档
 - ✅ **版本控制** - 使用Git管理源代码
 
 ### 1.3 开发环境
 
 - **编程语言**: Java 8+
-- **构建工具**: javac编译器
+- **构建工具**: Maven 3.6+
+- **编译器**: JDK 1.8+
 - **版本控制**: Git
-- **依赖库**: Gson 2.10.1（JSON处理）
-- **测试框架**: JUnit 5.9.2
+- **依赖库**: 
+  - Gson 2.10.1（JSON处理）
+  - JUnit 5.9.2（单元测试）
+- **文档**: Javadoc（API 文档生成）
 
 ---
 
@@ -77,22 +81,24 @@ src/
 ├── Main.java                           # 程序入口
 ├── model/
 │   ├── entity/                         # 实体类
-│   │   ├── TaxConfig.java
-│   │   ├── TaxRule.java
-│   │   └── TaxTable.java
-│   └── loader/                         # 配置加载
-│       ├── TaxConfigLoader.java        # 接口
-│       ├── JsonFileTaxConfigLoader.java
-│       ├── DefaultTaxConfigLoader.java
-│       └── TaxConfigLoaderFactory.java
+│   │   ├── TaxConfig.java              # 税收配置
+│   │   ├── TaxRule.java                # 税率规则
+│   │   └── TaxTable.java               # 税率表
+│   └── loader/                         # 加载和持久化
+│       ├── TaxConfigLoader.java        # 加载器接口
+│       ├── JsonFileTaxConfigLoader.java # JSON加载实现
+│       ├── DefaultTaxConfigLoader.java # 默认配置加载器
+│       ├── TaxConfigLoaderFactory.java # 加载器工厂
+│       ├── TaxConfigPersister.java     # 持久化接口
+│       └── JsonFileTaxConfigPersister.java # JSON持久化实现
 ├── service/                            # 业务逻辑
-│   ├── TaxCalculator.java
-│   ├── TaxChain.java
-│   ├── TaxContext.java
-│   ├── TaxHandler.java
-│   └── BaseTaxHandler.java
+│   ├── TaxCalculator.java              # 税费计算器
+│   ├── TaxChain.java                   # 责任链处理
+│   ├── TaxContext.java                 # 计算上下文
+│   ├── TaxHandler.java                 # 处理器接口
+│   └── BaseTaxHandler.java             # 基础处理器实现
 └── view/
-    └── TaxConsoleMenu.java             # UI界面
+    └── TaxConsoleMenu.java             # 控制台交互界面
 ```
 
 ---
@@ -259,6 +265,38 @@ src/
   - readDoubleInput(): double          [读取浮点数]
 ```
 
+### 3.5 数据持久化类
+
+#### TaxConfigPersister（接口）
+```
+职责: 定义配置持久化的标准接口
+方法:
+  + save(TaxConfig): void throws Exception
+  
+设计模式: 策略模式(Strategy Pattern)
+```
+
+#### JsonFileTaxConfigPersister
+```
+职责: 将配置保存到JSON文件
+方法:
+  + JsonFileTaxConfigPersister(String filePath): 构造函数
+  + save(TaxConfig): void
+  - convertToJson(TaxConfig): JsonTaxConfigDto
+  - ensureParentDirectory(): void
+  
+特点:
+  - 支持自动创建父目录
+  - UTF-8编码支持
+  - 完整的异常处理
+  - 支持覆盖已有文件
+
+实现细节:
+  - 使用 Gson 库进行序列化
+  - 自动格式化 JSON 输出
+  - 验证配置的完整性
+```
+
 ---
 
 ## 4. 设计模式
@@ -385,13 +423,52 @@ TaxContext.getFinalTax()
 显示计算结果
 ```
 
-### 6.2 配置加载数据流
+### 6.2 配置加载和持久化数据流
 
 ```
+配置加载流程:
+━━━━━━━━━━
 程序启动
-        │
-        ▼
+    │
+    ▼
 TaxConsoleMenu.start()
+    │
+    ├─ TaxConfigLoaderFactory.getLoader("json")
+    │
+    ├─ JsonFileTaxConfigLoader.load()
+    │
+    ├─ Gson 解析 settings.json
+    │
+    ├─ 验证配置数据
+    │
+    └─ 返回 TaxConfig 对象
+
+
+配置保存流程:
+━━━━━━━━━━
+用户修改税率表
+    │
+    ▼
+TaxConsoleMenu.handleUpdateTaxTable()
+    │
+    ▼
+创建新的 TaxConfig 对象
+    │
+    ▼
+TaxConfigLoaderFactory.getPersister("json", "settings.json")
+    │
+    ▼
+JsonFileTaxConfigPersister.save(config)
+    │
+    ├─ 验证 TaxConfig 数据
+    ├─ 转换为 JsonTaxConfigDto
+    ├─ 使用 Gson 序列化
+    ├─ 创建父目录（如需要）
+    └─ 写入文件
+    │
+    ▼
+保存成功提示
+```
         │
         ▼
 initConfig("json")
@@ -671,17 +748,20 @@ javadoc -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 \
 
 ✅ **清晰的架构** - 分层设计，职责明确
 ✅ **灵活的扩展** - 多个扩展点，易于修改
-✅ **完整的文档** - javadoc和设计文档齐全
+✅ **数据持久化** - 支持配置保存和加载
+✅ **完整的文档** - Javadoc API 文档和设计文档齐全
 ✅ **良好的测试** - 单元测试覆盖主要功能
 ✅ **专业的实现** - 使用设计模式和最佳实践
 
 ### 14.2 主要特性
 
-- 支持JSON配置文件
+- 支持 JSON 配置文件读写
+- 配置数据持久化保存
 - 动态调整税率规则
 - 友好的交互界面
 - 完整的数据验证
 - 清晰的错误提示
+- 完整的 API 文档
 
 ### 14.3 后续改进方向
 
@@ -694,8 +774,8 @@ javadoc -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 \
 ---
 
 **文档完成日期**: 2026-03-15  
-**最后更新日期**: 2026-03-15  
-**版本**: 1.1.0  
+**最后更新日期**: 2026-03-16  
+**版本**: 1.2.0  
 **作者**: GitHub Copilot  
 **状态**: 与最新代码同步
 
