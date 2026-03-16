@@ -20,24 +20,31 @@ set /p choice="Enter option [1-5]: "
 if "%choice%"=="1" (
     cls
     echo Building...
+    cd ..
     mvn clean install -DskipTests
+    cd bat
     pause
     goto menu
 ) else if "%choice%"=="2" (
     cls
     echo Testing...
+    cd ..
     mvn test
+    cd bat
     pause
     goto menu
 ) else if "%choice%"=="3" (
     cls
     echo Packaging...
+    cd ..
     mvn clean package
+    cd bat
     pause
     goto menu
 ) else if "%choice%"=="4" (
     cls
     echo Starting...
+    cd ..
     if exist "target\tax-calculator.jar" (
         java -jar target\tax-calculator.jar
     ) else (
@@ -47,6 +54,7 @@ if "%choice%"=="1" (
             java -jar target\tax-calculator.jar
         )
     )
+    cd bat
     pause
     goto menu
 ) else if "%choice%"=="5" (

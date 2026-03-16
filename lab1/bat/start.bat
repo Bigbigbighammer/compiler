@@ -1,4 +1,5 @@
 @echo off
+cd ..
 if exist "target\tax-calculator.jar" (
     java -jar target\tax-calculator.jar
 ) else (
@@ -6,4 +7,4 @@ if exist "target\tax-calculator.jar" (
     echo Please run: build.bat and package.bat first
     pause
 )
-
+cd bat
