@@ -25,7 +25,7 @@ import model.entity.TaxConfig;
  * persister.save(config);
  * </pre>
  *
- * @author GitHub Copilot
+ * @author Aaron
  * @version 1.0.0
  * @see TaxConfig
  * @see JsonFileTaxConfigPersister

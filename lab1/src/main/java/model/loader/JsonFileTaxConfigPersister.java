@@ -54,7 +54,7 @@ import java.util.List;
  * }
  * </pre>
  *
- * @author GitHub Copilot
+ * @author Aaron
  * @version 1.0.0
  * @see TaxConfigPersister
  * @see TaxConfig
