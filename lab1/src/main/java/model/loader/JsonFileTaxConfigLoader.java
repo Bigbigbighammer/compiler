@@ -6,22 +6,19 @@ import model.entity.TaxTable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * JSON文件税收配置加载器
- *
- * 从classpath中加载JSON格式的税务配置文件，并使用Gson库进行解析。
+ * 从根目录中加载JSON格式的税务配置文件，并使用Gson库进行解析。
  * 支持从settings.json文件中读取起征点和税率表的完整配置。
  *
  * <h2>功能特性</h2>
  * <ul>
- *   <li>从classpath资源加载JSON配置文件</li>
+ *   <li>从根目录加载JSON配置文件</li>
  *   <li>支持UTF-8编码的JSON文件</li>
  *   <li>完整的数据验证（起征点、税率规则参数）</li>
  *   <li>自动转换JSON DTO到业务实体对象</li>
@@ -79,7 +76,7 @@ public class JsonFileTaxConfigLoader implements TaxConfigLoader {
      *
      * <p>该方法执行以下步骤：</p>
      * <ol>
-     *   <li>从classpath加载指定的JSON文件</li>
+     *   <li>从根目录加载指定的JSON文件</li>
      *   <li>使用Gson库解析JSON内容</li>
      *   <li>验证所有配置数据的有效性</li>
      *   <li>将JSON DTO转换为TaxConfig实体对象</li>
@@ -95,9 +92,12 @@ public class JsonFileTaxConfigLoader implements TaxConfigLoader {
     public TaxConfig load() throws Exception {
         System.out.println(">> [Loader] Loading from JSON file: " + filePath);
 
-        // Load from classpath resource
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
-        if (inputStream == null) {
+        System.out.println("当前工作目录 (user.dir): " + System.getProperty("user.dir"));
+        System.out.println("正在寻找的文件路径: " + new File("settings.json").getAbsolutePath());
+        InputStream inputStream;
+        try {
+            inputStream = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
             throw new RuntimeException("Configuration file not found in classpath: " + filePath);
         }
 
