@@ -144,10 +144,18 @@ public class RegressionTest {
         TaxConfig config = createStandardConfig();
         TaxCalculator calculator = new TaxCalculator(config);
 
-        // Negative salaries should return 0
-        assertEquals(0.0, calculator.calculateTax(-1000.0), 0.001);
-        assertEquals(0.0, calculator.calculateTax(-1.0), 0.001);
-        assertEquals(0.0, calculator.calculateTax(-0.001), 0.001);
+        // Negative salaries should throw RuntimeException
+        assertThrows(RuntimeException.class, () -> {
+            calculator.calculateTax(-1000.0);
+        }, "Negative salary -1000 should throw RuntimeException");
+
+        assertThrows(RuntimeException.class, () -> {
+            calculator.calculateTax(-1.0);
+        }, "Negative salary -1.0 should throw RuntimeException");
+
+        assertThrows(RuntimeException.class, () -> {
+            calculator.calculateTax(-0.001);
+        }, "Negative salary -0.001 should throw RuntimeException");
 
         // Very large salaries should not crash
         double largeSalary = 1000000.0; // 1 million

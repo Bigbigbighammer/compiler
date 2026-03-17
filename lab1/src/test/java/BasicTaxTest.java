@@ -78,12 +78,18 @@ public class BasicTaxTest {
 
     @Test
     public void testNegativeSalary() {
-        // Negative salary should return zero tax
+        // Negative salary should throw RuntimeException
         TaxConfig config = createStandardConfig();
         TaxCalculator calculator = new TaxCalculator(config);
 
-        assertEquals(0.0, calculator.calculateTax(-1000.0), 0.001);
-        assertEquals(0.0, calculator.calculateTax(-1.0), 0.001);
+        // Test that negative salary throws RuntimeException
+        assertThrows(RuntimeException.class, () -> {
+            calculator.calculateTax(-1000.0);
+        }, "Negative salary should throw RuntimeException");
+
+        assertThrows(RuntimeException.class, () -> {
+            calculator.calculateTax(-1.0);
+        }, "Negative salary -1.0 should throw RuntimeException");
     }
 
     @Test
