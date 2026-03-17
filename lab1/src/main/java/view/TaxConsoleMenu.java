@@ -22,6 +22,7 @@ import java.util.InputMismatchException;
  *   <li>设置新的起征点</li>
  *   <li>重置整个税率表</li>
  *   <li>调整税率（保留区间不变）</li>
+ *   <li>显示当前的税率表</li>
  * </ul>
  *
  * <h2>主要职责</h2>
@@ -52,6 +53,7 @@ import java.util.InputMismatchException;
  *   <tr><td>2</td><td>设置起征点</td><td>修改个人所得税的免税额</td></tr>
  *   <tr><td>3</td><td>重置整个税率表</td><td>完全重新输入所有税率规则</td></tr>
  *   <tr><td>4</td><td>调整税率</td><td>仅修改税率，保留收入区间</td></tr>
+ *   <tr><td>4</td><td>显示当前的税率表</td><td>显示当前的税率表</td></tr>
  *   <tr><td>0</td><td>退出</td><td>关闭程序</td></tr>
  * </table>
  *
@@ -115,6 +117,9 @@ public class TaxConsoleMenu {
                     break;
                 case 4:
                     handleModifyRatesOnly();
+                    break;
+                case 5:
+                    showCurrentTaxTable();
                     break;
                 case 0:
                     System.out.println("正在退出系统...");
@@ -199,6 +204,7 @@ public class TaxConsoleMenu {
         System.out.println("  2. 设置起征点");
         System.out.println("  3. 重置整个税率表 (重新录入区间和税率)");
         System.out.println("  4. 仅调整税率 (保留区间不变)");
+        System.out.println("  5. 显示当前的税率表");
         System.out.println("  0. 退出");
         System.out.print("请输入选项序号: ");
     }
