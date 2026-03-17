@@ -96,16 +96,28 @@ public class TaxCalculator {
      *
      * @param salary 月工资金额（元）
      * @return 应缴个人所得税（元）
+     * @throws RuntimeException 当计算过程中出现错误时抛出
      *
      * @see #buildTaxChain(TaxConfig)
      */
     public double calculateTax(double salary) {
-        TaxChain taxChain = buildTaxChain(taxConfig);
-        double salaryBeyondThreshold = salary - taxConfig.getThreshold();
-        if (salaryBeyondThreshold < 0) {
-            return 0;
+        if (salary < 0) {
+            throw new RuntimeException("Salary cannot be negative: " + salary);
         }
-        return taxChain.calculate(salaryBeyondThreshold);
+        if (taxConfig == null) {
+            throw new RuntimeException("Tax configuration is not initialized");
+        }
+
+        try {
+            TaxChain taxChain = buildTaxChain(taxConfig);
+            double salaryBeyondThreshold = salary - taxConfig.getThreshold();
+            if (salaryBeyondThreshold < 0) {
+                return 0;
+            }
+            return taxChain.calculate(salaryBeyondThreshold);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to calculate tax: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -116,17 +128,34 @@ public class TaxCalculator {
      *
      * @param taxConfig 税收配置对象
      * @return 构建好的TaxChain对象
+     * @throws RuntimeException 当配置无效时抛出异常
      *
      * @see TaxChain
      * @see BaseTaxHandler
      */
     private TaxChain buildTaxChain(TaxConfig taxConfig) {
-        TaxChain taxChain = new TaxChain();
-        TaxTable taxTable = taxConfig.getTaxTable();
-        for (TaxRule taxRule : taxTable.getTaxRulesList()) {
-            taxChain.addLastHandler(new BaseTaxHandler(taxRule));
+        if (taxConfig == null || taxConfig.getTaxTable() == null) {
+            throw new RuntimeException("Invalid tax configuration");
         }
-        return taxChain;
+
+        try {
+            TaxChain taxChain = new TaxChain();
+            TaxTable taxTable = taxConfig.getTaxTable();
+
+            if (taxTable.getTaxRulesList() == null || taxTable.getTaxRulesList().isEmpty()) {
+                throw new RuntimeException("Tax rules list is empty");
+            }
+
+            for (TaxRule taxRule : taxTable.getTaxRulesList()) {
+                if (taxRule == null) {
+                    throw new RuntimeException("Tax rule cannot be null");
+                }
+                taxChain.addLastHandler(new BaseTaxHandler(taxRule));
+            }
+            return taxChain;
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to build tax chain: " + e.getMessage(), e);
+        }
     }
 
 }

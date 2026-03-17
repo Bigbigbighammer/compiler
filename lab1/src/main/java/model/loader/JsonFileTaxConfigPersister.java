@@ -101,30 +101,40 @@ public class JsonFileTaxConfigPersister implements TaxConfigPersister {
 
         System.out.println(">> [Persister] Saving configuration to: " + filePath);
 
-        // Create parent directories if they don't exist
-        File file = new File(filePath);
-        File parentDir = file.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                throw new RuntimeException("Failed to create parent directories: " + parentDir.getAbsolutePath());
+        try {
+            // Create parent directories if they don't exist
+            File file = new File(filePath);
+            File parentDir = file.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                if (!parentDir.mkdirs()) {
+                    throw new RuntimeException("Failed to create parent directories: " + parentDir.getAbsolutePath());
+                }
+                System.out.println(">> [Persister] Created directories: " + parentDir.getAbsolutePath());
             }
-            System.out.println(">> [Persister] Created directories: " + parentDir.getAbsolutePath());
-        }
 
-        // Convert TaxConfig to JSON DTO
-        JsonTaxConfigDto dto = convertToDto(config);
+            // Convert TaxConfig to JSON DTO
+            JsonTaxConfigDto dto = convertToDto(config);
 
-        // Serialize to JSON using Gson
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
+            // Serialize to JSON using Gson
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
 
-        try (FileOutputStream fos = new FileOutputStream(file);
-             OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
-            gson.toJson(dto, writer);
-            System.out.println(">> [Persister] Configuration saved successfully");
-        } catch (Exception e) {
+            try (FileOutputStream fos = new FileOutputStream(file);
+                 OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+                gson.toJson(dto, writer);
+                System.out.println(">> [Persister] Configuration saved successfully");
+            }
+        } catch (RuntimeException e) {
+            System.err.println("❌ 错误：配置保存失败");
+            System.err.println("   文件路径: " + filePath);
+            System.err.println("   详情: " + e.getMessage());
             throw new RuntimeException("Failed to save configuration to file: " + filePath, e);
+        } catch (Exception e) {
+            System.err.println("❌ 错误：IO异常");
+            System.err.println("   文件路径: " + filePath);
+            System.err.println("   详情: " + e.getMessage());
+            throw new RuntimeException("IO error when saving configuration: " + filePath, e);
         }
     }
 

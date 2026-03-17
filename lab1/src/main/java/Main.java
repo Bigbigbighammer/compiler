@@ -28,12 +28,22 @@ import view.TaxConsoleMenu;
  */
 public class Main {
 
-    /**
-     * 程序主方法
-     *
-     * @param args 命令行参数（当前无需传递）
-     */
-    public static void main(String[] args) {
+/**
+ * 程序主方法
+ *
+ * @param args 命令行参数（当前无需传递）
+ */
+public static void main(String[] args) {
+    try {
         new TaxConsoleMenu().start();
+    } catch (RuntimeException e) {
+        System.err.println("❌ 程序运行失败：" + e.getMessage());
+        e.printStackTrace();
+        System.exit(1);
+    } catch (Exception e) {
+        System.err.println("❌ 程序异常：" + e.getMessage());
+        e.printStackTrace();
+        System.exit(1);
     }
+}
 }

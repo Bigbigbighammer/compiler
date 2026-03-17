@@ -107,6 +107,8 @@ src/
 
 ### 3.1 实体类
 
+![img.png](img.png)
+
 #### TaxConfig（税务配置）
 ```
 属性:
@@ -468,7 +470,6 @@ JsonFileTaxConfigPersister.save(config)
     │
     ▼
 保存成功提示
-```
         │
         ▼
 initConfig("json")
@@ -479,7 +480,7 @@ TaxConfigLoaderFactory.getLoader()
         ▼
 JsonFileTaxConfigLoader.load()
         │
-        ├─ 从classpath加载settings.json
+        ├─ 加载settings.json
         ├─ 使用Gson解析JSON
         ├─ 验证数据有效性
         └─ 转换为Java对象
@@ -776,6 +777,6 @@ javadoc -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 \
 **文档完成日期**: 2026-03-15  
 **最后更新日期**: 2026-03-16  
 **版本**: 1.2.0  
-**作者**: GitHub Copilot  
+**作者**: Aaron 
 **状态**: 与最新代码同步
 

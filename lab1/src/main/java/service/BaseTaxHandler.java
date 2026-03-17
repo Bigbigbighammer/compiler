@@ -66,25 +66,44 @@ public class BaseTaxHandler implements TaxHandler {
      * </ol>
      *
      * @param taxContext 税收计算上下文
+     * @throws RuntimeException 当上下文为空或计算出现错误时抛出
      *
      * @see TaxRule
      * @see TaxContext
      */
     @Override
     public void calculate(TaxContext taxContext) {
-        double salary = taxContext.getSalary();
-        double min = taxRule.getMin();
-        double max = taxRule.getMax();
-
-        // If remaining salary is below this rule's minimum, stop the chain
-        if (salary < min) {
-            taxContext.stopChain();
-            return;
+        if (taxContext == null) {
+            throw new RuntimeException("Tax context cannot be null");
         }
 
-        // Calculate the part of salary that falls within this rule's range
-        double part = Math.min(max, salary) - min;
-        double tax = part * taxRule.getRate();
-        taxContext.addTax(tax);
+        try {
+            double salary = taxContext.getSalary();
+            double min = taxRule.getMin();
+            double max = taxRule.getMax();
+
+            // If remaining salary is below this rule's minimum, stop the chain
+            if (salary < min) {
+                taxContext.stopChain();
+                return;
+            }
+
+            // Calculate the part of salary that falls within this rule's range
+            double part = Math.min(max, salary) - min;
+
+            if (part < 0) {
+                throw new RuntimeException("Calculated tax part cannot be negative: " + part);
+            }
+
+            double tax = part * taxRule.getRate();
+
+            if (tax < 0 || tax > salary) {
+                throw new RuntimeException("Calculated tax value is invalid: " + tax);
+            }
+
+            taxContext.addTax(tax);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to calculate tax for rule grade " + taxRule.getGrade() + ": " + e.getMessage(), e);
+        }
     }
 }

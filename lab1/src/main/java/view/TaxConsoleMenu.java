@@ -177,8 +177,13 @@ public class TaxConsoleMenu {
         TaxConfigLoader loader = TaxConfigLoaderFactory.getLoader(sourceType);
         try {
             taxConfig = loader.load();
+            System.out.println("✓ 配置加载成功");
+        } catch (RuntimeException e) {
+            System.err.println("❌ 配置加载失败：" + e.getMessage());
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.err.println("❌ 配置加载异常：" + e.getMessage());
+            throw new RuntimeException("Failed to load tax configuration", e);
         }
     }
 
@@ -218,9 +223,13 @@ public class TaxConsoleMenu {
             System.out.println(">> 错误：工资不能为负数。");
             return;
         }
-        TaxCalculator calculator = new TaxCalculator(taxConfig);
-        double tax = calculator.calculateTax(income);
-        System.out.printf(">> 结果：您应缴纳的个人所得税为: %.2f 元\n", tax);
+        try {
+            TaxCalculator calculator = new TaxCalculator(taxConfig);
+            double tax = calculator.calculateTax(income);
+            System.out.printf(">> 结果：您应缴纳的个人所得税为: %.2f 元\n", tax);
+        } catch (RuntimeException e) {
+            System.err.println("❌ 税费计算失败：" + e.getMessage());
+        }
     }
 
     /**
@@ -246,12 +255,16 @@ public class TaxConsoleMenu {
             return;
         }
 
-        taxConfig.setThreshold(newThreshold);
-        System.out.println(">> 设置成功！当前起征点已更新为: " + newThreshold);
+        try {
+            taxConfig.setThreshold(newThreshold);
+            System.out.println(">> 设置成功！当前起征点已更新为: " + newThreshold);
 
-        // 如果使用JSON配置，自动保存
-        if ("json".equals(configSourceType)) {
-            saveConfig();
+            // 如果使用JSON配置，自动保存
+            if ("json".equals(configSourceType)) {
+                saveConfig();
+            }
+        } catch (RuntimeException e) {
+            System.err.println("❌ 设置起征点失败：" + e.getMessage());
         }
     }
 
@@ -284,69 +297,73 @@ public class TaxConsoleMenu {
         System.out.println("\n========== 修改税率表 ==========");
         System.out.println("说明：系统将引导您重新录入各级税率。");
         System.out.println("      上一级的【上限】将自动成为下一级的【下限】。");
-        System.out.println("      输入金额 -1 代表“无穷大”（即最后一级）。");
+        System.out.println("      输入金额 -1 代表\"无穷大\"（即最后一级）。");
         System.out.println("================================");
 
-        List<TaxRule> newRules = new ArrayList<>();
-        double currentMin = 0.0; // 第一级从 0 开始
-        int grade = 1;
-        boolean finished = false;
+        try {
+            List<TaxRule> newRules = new ArrayList<>();
+            double currentMin = 0.0; // 第一级从 0 开始
+            int grade = 1;
+            boolean finished = false;
 
-        while (!finished) {
-            System.out.println("\n>> 正在录入第 [" + grade + "] 级税率规则");
-            System.out.printf("   当前区间下限: %.0f 元\n", currentMin);
+            while (!finished) {
+                System.out.println("\n>> 正在录入第 [" + grade + "] 级税率规则");
+                System.out.printf("   当前区间下限: %.0f 元\n", currentMin);
 
-            // 1. 输入上限
-            double currentMax = 0;
-            while (true) {
-                System.out.print("   请输入本级【上限金额】(输入 -1 代表无穷大/结束): ");
-                double input = readDoubleInput(); // 之前封装好的读取方法
+                // 1. 输入上限
+                double currentMax = 0;
+                while (true) {
+                    System.out.print("   请输入本级【上限金额】(输入 -1 代表无穷大/结束): ");
+                    double input = readDoubleInput(); // 之前封装好的读取方法
 
-                if (input == -1) {
-                    currentMax = Double.MAX_VALUE;
-                    finished = true; // 这是最后一级
-                    break;
-                } else if (input <= currentMin) {
-                    System.out.println("   错误：上限必须大于下限 (" + currentMin + ")，请重新输入。");
-                } else {
-                    currentMax = input;
-                    break;
+                    if (input == -1) {
+                        currentMax = Double.MAX_VALUE;
+                        finished = true; // 这是最后一级
+                        break;
+                    } else if (input <= currentMin) {
+                        System.out.println("   错误：上限必须大于下限 (" + currentMin + ")，请重新输入。");
+                    } else {
+                        currentMax = input;
+                        break;
+                    }
+                }
+
+                // 2. 输入税率
+                double currentRate = 0;
+                while (true) {
+                    System.out.print("   请输入本级【税率百分比】(例如输入 5 代表 5%): ");
+                    double input = readDoubleInput();
+
+                    if (input < 0 || input > 100) {
+                        System.out.println("   错误：税率必须在 0 到 100 之间。");
+                    } else {
+                        currentRate = input / 100.0; // 转换为小数
+                        break;
+                    }
+                }
+
+                // 3. 创建规则对象并添加
+                TaxRule rule = new TaxRule(grade, currentMin, currentMax, currentRate);
+                newRules.add(rule);
+
+                // 4. 准备下一级
+                if (!finished) {
+                    currentMin = currentMax; // 关键：当前上限变成下一级下限
+                    grade++;
                 }
             }
 
-            // 2. 输入税率
-            double currentRate = 0;
-            while (true) {
-                System.out.print("   请输入本级【税率百分比】(例如输入 5 代表 5%): ");
-                double input = readDoubleInput();
+            // 5. 保存更新
+            taxConfig.getTaxTable().resetRules(newRules);
+            System.out.println("\n>> 成功！税率表已更新。新的规则如下：");
+            showCurrentTaxTable(); // 调用下面的显示方法
 
-                if (input < 0 || input > 100) {
-                    System.out.println("   错误：税率必须在 0 到 100 之间。");
-                } else {
-                    currentRate = input / 100.0; // 转换为小数
-                    break;
-                }
+            // 如果使用JSON配置，自动保存
+            if ("json".equals(configSourceType)) {
+                saveConfig();
             }
-
-            // 3. 创建规则对象并添加
-            TaxRule rule = new TaxRule(grade, currentMin, currentMax, currentRate);
-            newRules.add(rule);
-
-            // 4. 准备下一级
-            if (!finished) {
-                currentMin = currentMax; // 关键：当前上限变成下一级下限
-                grade++;
-            }
-        }
-
-        // 5. 保存更新
-        taxConfig.getTaxTable().resetRules(newRules);
-        System.out.println("\n>> 成功！税率表已更新。新的规则如下：");
-        showCurrentTaxTable(); // 调用下面的显示方法
-
-        // 如果使用JSON配置，自动保存
-        if ("json".equals(configSourceType)) {
-            saveConfig();
+        } catch (RuntimeException e) {
+            System.err.println("❌ 税率表更新失败：" + e.getMessage());
         }
     }
 
@@ -435,45 +452,49 @@ public class TaxConsoleMenu {
         System.out.println("      (例如：原税率 5%，输入 10 代表改为 10%)");
         System.out.println("================================");
 
-        // 2. 遍历修改
-        for (TaxRule rule : rules) {
-            System.out.println("\n>> 正在修改第 [" + rule.getGrade() + "] 级");
+        try {
+            // 2. 遍历修改
+            for (TaxRule rule : rules) {
+                System.out.println("\n>> 正在修改第 [" + rule.getGrade() + "] 级");
 
-            // 打印友好的提示信息，显示当前区间
-            String rangeDesc;
-            if (rule.getMax() == Double.MAX_VALUE) {
-                rangeDesc = String.format("超过 %.0f 元的部分", rule.getMin());
-            } else {
-                rangeDesc = String.format("%.0f 元 至 %.0f 元", rule.getMin(), rule.getMax());
-            }
-            System.out.println("   区间范围: " + rangeDesc);
-            System.out.printf("   当前税率: %.0f%%\n", rule.getRate() * 100);
-
-            // 3. 读取新税率
-            double newRatePercent = 0;
-            while (true) {
-                System.out.print("   请输入新税率 (0-100): ");
-                double input = readDoubleInput(); // 使用之前封装好的读取方法
-
-                if (input < 0 || input > 100) {
-                    System.out.println("   错误：税率必须在 0 到 100 之间，请重新输入。");
+                // 打印友好的提示信息，显示当前区间
+                String rangeDesc;
+                if (rule.getMax() == Double.MAX_VALUE) {
+                    rangeDesc = String.format("超过 %.0f 元的部分", rule.getMin());
                 } else {
-                    newRatePercent = input;
-                    break;
+                    rangeDesc = String.format("%.0f 元 至 %.0f 元", rule.getMin(), rule.getMax());
                 }
+                System.out.println("   区间范围: " + rangeDesc);
+                System.out.printf("   当前税率: %.0f%%\n", rule.getRate() * 100);
+
+                // 3. 读取新税率
+                double newRatePercent = 0;
+                while (true) {
+                    System.out.print("   请输入新税率 (0-100): ");
+                    double input = readDoubleInput(); // 使用之前封装好的读取方法
+
+                    if (input < 0 || input > 100) {
+                        System.out.println("   错误：税率必须在 0 到 100 之间，请重新输入。");
+                    } else {
+                        newRatePercent = input;
+                        break;
+                    }
+                }
+
+                // 4. 执行更新 (将百分比转换为小数，如 10 -> 0.1)
+                rule.setRate(newRatePercent / 100.0);
+                System.out.println("   --> 已更新为 " + newRatePercent + "%");
             }
 
-            // 4. 执行更新 (将百分比转换为小数，如 10 -> 0.1)
-            rule.setRate(newRatePercent / 100.0);
-            System.out.println("   --> 已更新为 " + newRatePercent + "%");
-        }
+            System.out.println("\n>> 所有级别的税率已更新完毕！");
+            showCurrentTaxTable(); // 显示最终结果
 
-        System.out.println("\n>> 所有级别的税率已更新完毕！");
-        showCurrentTaxTable(); // 显示最终结果
-
-        // 如果使用JSON配置，自动保存
-        if ("json".equals(configSourceType)) {
-            saveConfig();
+            // 如果使用JSON配置，自动保存
+            if ("json".equals(configSourceType)) {
+                saveConfig();
+            }
+        } catch (RuntimeException e) {
+            System.err.println("❌ 税率修改失败：" + e.getMessage());
         }
     }
 
@@ -481,18 +502,21 @@ public class TaxConsoleMenu {
      * 读取整数输入并处理异常
      *
      * <p>从控制台安全地读取整数输入。当用户输入非数字内容时，
-     * 自动清空缓冲区并返回 -1，表示输入错误。
+     * 自动清空缓冲区并提示用户重新输入，循环重试直到获得有效输入。
      * 这个设计符合健壮性和容错性的要求。</p>
      *
-     * @return 用户输入的整数，或 -1（表示输入异常）
+     * @return 用户输入的整数
      * @see InputMismatchException
      */
     private int readIntInput() {
-        try {
-            return scanner.nextInt();
-        } catch (InputMismatchException e) {
-            scanner.next(); // 清空错误的输入缓存
-            return -1; // 返回一个无效值
+        while (true) {
+            try {
+                return scanner.nextInt();
+            } catch (InputMismatchException e) {
+                scanner.nextLine(); // 清空错误的输入缓存
+                System.out.println("❌ 输入错误：请输入有效的整数");
+                System.out.print("请重新输入: ");
+            }
         }
     }
 
@@ -500,18 +524,21 @@ public class TaxConsoleMenu {
      * 读取浮点数输入并处理异常
      *
      * <p>从控制台安全地读取浮点数输入。当用户输入非数字内容时，
-     * 自动清空缓冲区并返回 -1.0，表示输入错误。
+     * 自动清空缓冲区并提示用户重新输入，循环重试直到获得有效输入。
      * 这个设计符合健壮性和容错性的要求。</p>
      *
-     * @return 用户输入的浮点数，或 -1.0（表示输入异常）
+     * @return 用户输入的浮点数
      * @see InputMismatchException
      */
     private double readDoubleInput() {
-        try {
-            return scanner.nextDouble();
-        } catch (InputMismatchException e) {
-            scanner.next(); // 清空错误的输入缓存
-            return -1.0;
+        while (true) {
+            try {
+                return scanner.nextDouble();
+            } catch (InputMismatchException e) {
+                scanner.nextLine(); // 清空错误的输入缓存
+                System.out.println("❌ 输入错误：请输入有效的数字");
+                System.out.print("请重新输入: ");
+            }
         }
     }
 }

@@ -60,21 +60,34 @@ public class DefaultTaxConfigLoader implements TaxConfigLoader{
      * 起征点固定为1600元，包含5个级次的税率规则。</p>
      *
      * @return 包含默认配置的TaxConfig对象，永远不为null
+     * @throws RuntimeException 当配置初始化失败时抛出
      */
     @Override
     public TaxConfig load() {
         System.out.println(">> [Loader] 使用默认硬编码配置加载...");
 
-        TaxTable table = new TaxTable();
-        List<TaxRule> rules = new ArrayList<>();
-        // 2006年标准
-        rules.add(new TaxRule(1, 0, 500, 0.05));
-        rules.add(new TaxRule(2, 500, 2000, 0.10));
-        rules.add(new TaxRule(3, 2000, 5000, 0.15));
-        rules.add(new TaxRule(4, 5000, 20000, 0.20));
-        rules.add(new TaxRule(5, 20000, Double.MAX_VALUE, 0.25));
-        table.resetRules(rules);
+        try {
+            TaxTable table = new TaxTable();
+            List<TaxRule> rules = new ArrayList<>();
+            // 2006年标准
+            rules.add(new TaxRule(1, 0, 500, 0.05));
+            rules.add(new TaxRule(2, 500, 2000, 0.10));
+            rules.add(new TaxRule(3, 2000, 5000, 0.15));
+            rules.add(new TaxRule(4, 5000, 20000, 0.20));
+            rules.add(new TaxRule(5, 20000, Double.MAX_VALUE, 0.25));
+            table.resetRules(rules);
 
-        return new TaxConfig(1600, table);
+            TaxConfig config = new TaxConfig(1600, table);
+
+            if (config == null) {
+                throw new RuntimeException("Failed to create default TaxConfig");
+            }
+
+            System.out.println("✓ 默认配置加载成功");
+            return config;
+        } catch (RuntimeException e) {
+            System.err.println("❌ 默认配置加载失败：" + e.getMessage());
+            throw new RuntimeException("Failed to load default tax configuration", e);
+        }
     }
 }

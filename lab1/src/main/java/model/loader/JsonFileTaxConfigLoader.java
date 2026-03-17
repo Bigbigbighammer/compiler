@@ -5,6 +5,7 @@ import model.entity.TaxRule;
 import model.entity.TaxTable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -96,7 +97,10 @@ public class JsonFileTaxConfigLoader implements TaxConfigLoader {
         try {
             inputStream = new FileInputStream(filePath);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Configuration file not found in classpath: " + filePath);
+            System.err.println("❌ 错误：配置文件不存在");
+            System.err.println("   文件路径: " + filePath);
+            System.err.println("   详情: " + e.getMessage());
+            throw new RuntimeException("Configuration file not found: " + filePath, e);
         }
 
         // Parse JSON using Gson
@@ -108,6 +112,16 @@ public class JsonFileTaxConfigLoader implements TaxConfigLoader {
              Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             JsonTaxConfigDto dto = gson.fromJson(reader, JsonTaxConfigDto.class);
             return convertToTaxConfig(dto);
+        } catch (JsonSyntaxException e) {
+            System.err.println("❌ 错误：JSON文件格式错误");
+            System.err.println("   文件路径: " + filePath);
+            System.err.println("   解析错误: " + e.getMessage());
+            throw new RuntimeException("JSON parse error in file: " + filePath, e);
+        } catch (Exception e) {
+            System.err.println("❌ 错误：读取配置文件失败");
+            System.err.println("   文件路径: " + filePath);
+            System.err.println("   详情: " + e.getMessage());
+            throw e;
         }
     }
 

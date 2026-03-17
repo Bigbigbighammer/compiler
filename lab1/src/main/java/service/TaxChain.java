@@ -68,19 +68,41 @@ public class TaxChain {
      *
      * @param salary 超出起征点的收入（元）
      * @return 计算后的总税费（元）
+     * @throws RuntimeException 当计算过程中出现错误时抛出
      *
      * @see TaxContext
      * @see TaxHandler
      */
     public double calculate(double salary) {
-        TaxContext taxContext = new TaxContext(salary);
-        for (TaxHandler taxHandler : taxHandlers) {
-            taxHandler.calculate(taxContext);
-            if (taxContext.shouldStop()) {
-                break;
-            }
+        if (salary < 0) {
+            throw new RuntimeException("Salary cannot be negative: " + salary);
         }
-        return taxContext.getFinalTax();
+
+        if (taxHandlers == null || taxHandlers.isEmpty()) {
+            throw new RuntimeException("No tax handlers in the chain");
+        }
+
+        try {
+            TaxContext taxContext = new TaxContext(salary);
+            for (TaxHandler taxHandler : taxHandlers) {
+                if (taxHandler == null) {
+                    throw new RuntimeException("Tax handler cannot be null");
+                }
+                taxHandler.calculate(taxContext);
+                if (taxContext.shouldStop()) {
+                    break;
+                }
+            }
+
+            double finalTax = taxContext.getFinalTax();
+            if (finalTax < 0) {
+                throw new RuntimeException("Final tax cannot be negative: " + finalTax);
+            }
+
+            return finalTax;
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to calculate tax in chain: " + e.getMessage(), e);
+        }
     }
 
 }
