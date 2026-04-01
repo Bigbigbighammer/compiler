@@ -19,23 +19,16 @@ import ui.IOHandler;
 
 public class AppContext {
 
-    private CommandRegistry registry;
-    private CommandExecutor executor;
-
-    public AppContext(IOHandler ioHandler) {
-        this.ioHandler = ioHandler;
-    }
-
-    private final IOHandler ioHandler;
+    private final CommandRegistry registry = new CommandRegistry();
+    private UserService userService;
+    private MeetingService meetingService;
 
     public void init() {
         UserMapper userMapper = new DefaultUserMapper();
         MeetingMapper meetingMapper = new DefaultMeetingMapper();
 
-        UserService userService = new UserService(userMapper);
-        MeetingService meetingService = new MeetingService(meetingMapper, userService);
-
-        registry = new CommandRegistry();
+        userService = new UserService(userMapper);
+        meetingService = new MeetingService(meetingMapper, userService);
 
         registry.registerCommand(CommandType.REGISTER,
                 new RegisterCommand(userService));
@@ -54,18 +47,23 @@ public class AppContext {
 
         registry.registerCommand(CommandType.QUIT,
                 new QuitCommand());
+    }
 
-        executor = new CommandExecutor(registry, new SimpleCommandParser(), ioHandler);
-
-        registry.registerCommand(CommandType.BATCH,
-                new BatchCommand(executor));
+    public CommandExecutor createExecutor(IOHandler ioHandler) {
+        CommandExecutor executor = new CommandExecutor(registry, new SimpleCommandParser(), ioHandler);
+        registry.registerCommand(CommandType.BATCH, new BatchCommand(executor));
+        return executor;
     }
 
     public CommandRegistry getRegistry() {
         return registry;
     }
 
-    public CommandExecutor getExecutor() {
-        return executor;
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public MeetingService getMeetingService() {
+        return meetingService;
     }
 }
