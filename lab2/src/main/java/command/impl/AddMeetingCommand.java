@@ -11,16 +11,37 @@ import utils.TimeUtil;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+/**
+ * 添加会议命令。
+ * <p>
+ * 格式：{@code add <username> <password> <other> <start> <end> <title>}
+ * </p>
+ * <p>
+ * 时间格式：{@code yyyy-MM-dd-HH:mm}
+ * </p>
+ *
+ * @author Aaron
+ * @version 1.0
+ */
 public class AddMeetingCommand implements Command<Void> {
 
     private final UserService userService;
     private final MeetingService meetingService;
 
+    /**
+     * 构造添加会议命令。
+     *
+     * @param userService   用户服务
+     * @param meetingService 会议服务
+     */
     public AddMeetingCommand(UserService userService, MeetingService meetingService) {
         this.userService = userService;
         this.meetingService = meetingService;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Response<Void> execute(String[] args) {
         if (args.length < 6) {

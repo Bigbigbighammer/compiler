@@ -1,4 +1,3 @@
-import ui.IOHandler;
 import ui.SocketIOHandler;
 
 import java.io.BufferedReader;
@@ -7,16 +6,40 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * 议程服务客户端。
+ * <p>
+ * 连接到服务端，发送命令并接收结果。
+ * </p>
+ *
+ * @author Aaron
+ * @version 1.0
+ */
 public class AgendaClient {
 
+    /** 服务端主机地址 */
     private final String host;
+
+    /** 服务端端口 */
     private final int port;
 
+    /**
+     * 构造客户端。
+     *
+     * @param host 服务端主机地址
+     * @param port 服务端端口
+     */
     public AgendaClient(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
+    /**
+     * 启动客户端。
+     * <p>
+     * 连接服务端，启动接收线程，读取用户输入并发送命令。
+     * </p>
+     */
     public void start() {
         try (Socket socket = new Socket(host, port);
              BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -58,10 +81,15 @@ public class AgendaClient {
         }
     }
 
+    /**
+     * 主方法。
+     *
+     * @param args 命令行参数，格式：&lt;host&gt; &lt;port&gt;
+     */
     public static void main(String[] args) {
         if (args.length < 2) {
             System.out.println("Usage: java AgendaClient <host> <port>");
-            System.out.println("Example: java AgendaClient localhost 8888");
+            System.out.println("Example: java AgendaClient localhost 8080");
             return;
         }
 
